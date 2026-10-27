@@ -18,6 +18,7 @@ client = MongoClient(MONGO_URL, serverSelectionTimeoutMS=5000)
 db = client[DB_NAME]
 productos_col = db["productos"]
 pedidos_col = db["pedidos"]
+usuarios_col = db["Usuarios"]
 
 
 def verificar_conexion() -> bool:
@@ -26,3 +27,8 @@ def verificar_conexion() -> bool:
         return True
     except (ConnectionFailure, ServerSelectionTimeoutError):
         return False
+
+try:
+    usuarios_col.create_index("email", unique = true)
+except Exception:
+    pass #si no hay conexion aun, se omite
