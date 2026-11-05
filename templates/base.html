@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}TechGear{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0b0f1a; --surface:#131a2b; --surface-2:#1b2540; --border:#26335a;
+      --text:#e6ebf5; --muted:#8b97b5;
+      --accent:#22d3ee; --accent-2:#8b5cf6;
+      --grad:linear-gradient(135deg,var(--accent),var(--accent-2));
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;font-family:'Space Grotesk',system-ui,sans-serif;color:var(--text);
+      background:
+        radial-gradient(900px 400px at 85% -10%,#8b5cf622,transparent),
+        radial-gradient(700px 400px at -10% 0%,#22d3ee1a,transparent),
+        var(--bg);
+      min-height:100vh;
+    }
+
+    /* Navegación */
+    nav{
+      position:sticky;top:0;z-index:10;
+      background:#0b0f1acc;backdrop-filter:blur(10px);
+      border-bottom:1px solid var(--border);
+      padding:14px 28px;display:flex;justify-content:space-between;align-items:center;
+    }
+    nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-weight:500;transition:color .2s}
+    nav a:hover{color:var(--accent)}
+    nav span{margin-left:20px;color:var(--muted);font-size:.9rem}
+    nav .logo{
+      margin:0;font-weight:700;font-size:1.35rem;letter-spacing:-.5px;
+      background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+    }
+
+    main{max-width:1100px;margin:32px auto;padding:0 20px}
+
+    /* Mensajes */
+    .msg{padding:12px 16px;border-radius:10px;margin-bottom:14px;border:1px solid;border-left-width:4px}
+    .msg.error{background:#3b1219;color:#fda4af;border-color:#f43f5e}
+    .msg.success{background:#0f2e22;color:#86efac;border-color:#22c55e}
+    .msg.info,.msg.warning{background:#10264a;color:#93c5fd;border-color:#3b82f6}
+
+    /* Catálogo */
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:22px}
+    .card{
+      background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;
+      display:flex;flex-direction:column;transition:transform .2s,border-color .2s,box-shadow .2s;
+    }
+    .card:hover{transform:translateY(-4px);border-color:var(--accent);box-shadow:0 10px 30px #22d3ee22}
+    .card img,.card .noimg{width:100%;height:170px;object-fit:cover;background:var(--surface-2)}
+    .card div{padding:16px}
+    .precio{font-weight:700;font-size:1.2rem;color:var(--accent)}
+    .tag{
+      font-size:.7rem;text-transform:uppercase;letter-spacing:.5px;
+      background:var(--surface-2);color:var(--accent-2);border:1px solid var(--border);
+      border-radius:999px;padding:3px 10px;
+    }
+
+    /* Formularios */
+    form.box{
+      background:var(--surface);max-width:420px;margin:48px auto;padding:30px;
+      border:1px solid var(--border);border-radius:18px;box-shadow:0 20px 50px #00000066;
+    }
+    form.box label{display:block;margin-top:14px;font-weight:500;color:var(--muted);font-size:.9rem}
+    form.box input{
+      width:100%;padding:12px;margin-top:6px;background:var(--bg);color:var(--text);
+      border:1px solid var(--border);border-radius:10px;font-family:inherit;transition:border-color .2s,box-shadow .2s;
+    }
+    form.box input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px #22d3ee33}
+
+    /* Botones */
+    button,.btn{
+      background:var(--grad);color:#06121f;border:0;padding:11px 20px;border-radius:10px;
+      cursor:pointer;margin-top:18px;text-decoration:none;font-weight:700;font-family:inherit;
+      display:inline-block;transition:transform .15s,box-shadow .15s;
+    }
+    button:hover,.btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px #8b5cf655}
+  </style>
+</head>
+<body>
+<nav>
+  <a class="logo" href="{% url 'catalogo' %}">TechGear</a>
+  <div>
+    <a href="{% url 'catalogo' %}">Catálogo</a>
+    {% if request.session.usuario %}
+      <span>Hola, {{ request.session.usuario.nombre }} ({{ request.session.usuario.rol }})</span>
+      {% if request.session.usuario.rol == "administrador" %}
+        <a href="{% url 'panel_admin' %}">Panel de administración</a>
+      {% endif %}
+      <a href="{% url 'logout' %}">Salir</a>
+    {% else %}
+      <a href="{% url 'login' %}">Iniciar sesión</a>
+      <a href="{% url 'registro' %}">Registrarse</a>
+    {% endif %}
+  </div>
+</nav>
+<main>
+  {% for m in messages %}<div class="msg {{ m.tags }}">{{ m }}</div>{% endfor %}
+  {% block content %}{% endblock %}
+</main>
+</body>
+</html>

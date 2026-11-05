@@ -1,11 +1,12 @@
 from fastapi import FastAPI
 from app.database import verificar_conexion
-from app.routers import pedidos, productos
+from app.routers import pedidos, productos, usuarios
 
 app = FastAPI(title="TechGear API", description = "API de produtos y pedidos", version="1.0.0")
 
 app.include_router(productos.router)
 app.include_router(pedidos.router)
+app.include_router(usuarios.router)
 
 @app.get("/", tags=["Sistema"])
 def raiz():

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Catálogo · TechGear{% endblock %}
+{% block content %}
+<style>
+  .page-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:26px}
+  .page-head h1{
+    margin:0;font-size:2rem;letter-spacing:-1px;
+    background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .page-head p{margin:4px 0 0;color:var(--muted);font-size:.95rem}
+
+  /* Filtro */
+  .filtro{display:flex;gap:10px;margin:0}
+  .filtro input{
+    padding:11px 14px;min-width:230px;background:var(--surface);color:var(--text);
+    border:1px solid var(--border);border-radius:10px;font-family:inherit;transition:border-color .2s,box-shadow .2s;
+  }
+  .filtro input::placeholder{color:var(--muted)}
+  .filtro input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px #22d3ee33}
+  .filtro button{margin-top:0;padding:11px 20px}
+
+  /* Contenido de las tarjetas */
+  .card .info{display:flex;flex-direction:column;flex:1;gap:6px}
+  .card h3{margin:8px 0 0;font-size:1.1rem;letter-spacing:-.3px}
+  .card p{margin:0;color:var(--muted);font-size:.9rem;line-height:1.45}
+  .card .precio{margin-top:auto;padding-top:10px;color:var(--accent)}
+  .stock{font-size:.8rem;font-weight:500;color:#86efac}
+  .stock.agotado{color:#fda4af}
+  .vacio{grid-column:1/-1;text-align:center;padding:48px 16px;color:var(--muted);
+    background:var(--surface);border:1px dashed var(--border);border-radius:16px}
+</style>
+
+<div class="page-head">
+  <div>
+    <h1>Catálogo de productos</h1>
+    <p>Encuentra la mejor tecnología para ti</p>
+  </div>
+  <form method="get" class="filtro">
+    <input name="categoria" value="{{ categoria }}" placeholder="Filtrar por categoría">
+    <button type="submit">Filtrar</button>
+  </form>
+</div>
+
+<div class="grid">
+  {% for p in productos %}
+  <article class="card">
+    {% if p.imagen_url %}<img src="{{ p.imagen_url }}" alt="{{ p.nombre }}">{% else %}<div class="noimg"></div>{% endif %}
+    <div class="info">
+      <span class="tag" style="align-self:flex-start">{{ p.categoria }}</span>
+      <h3>{{ p.nombre }}</h3>
+      <p>{{ p.descripcion }}</p>
+      <p class="precio">${{ p.precio|floatformat:"0g" }}</p>
+      {% if p.stock > 0 %}
+        <small class="stock">● {{ p.stock }} disponibles</small>
+      {% else %}
+        <small class="stock agotado">● Agotado</small>
+      {% endif %}
+    </div>
+  </article>
+  {% empty %}
+  <p class="vacio">No hay productos para mostrar.</p>
+  {% endfor %}
+</div>
+{% endblock %}
