@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'techgear_web.store',
+    'store',
 ]
 
 MIDDLEWARE = [
@@ -57,7 +57,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'techgear_web.urls'
+ROOT_URLCONF = 'urls'
 
 TEMPLATES = [{
     "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -70,14 +70,11 @@ TEMPLATES = [{
     ]},
 }]
 
-LANGUAGE_CODE = "es"
-TIME_ZONE = "America/Bogota"
-
 API_URL = os.environ.get("API_URL", "http://127.0.0.1:8000")
 API_KEY = os.environ.get("API_KEY", "")
 SESSION_COOKIE_AGE = 3600     # 1 hora, igual que el JWT
 
-WSGI_APPLICATION = 'techgear_web.wsgi.application'
+WSGI_APPLICATION = 'wsgi.application'
 
 
 # Database
@@ -113,9 +110,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-co'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "America/Bogota"
 
 USE_I18N = True
 
