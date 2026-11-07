@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Mis pedidos · TechGear{% endblock %}
+{% block content %}
+<style>
+  .page-head h1{
+    margin:0 0 4px;font-size:2rem;letter-spacing:-1px;
+    background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .page-head p{margin:0 0 26px;color:var(--muted);font-size:.95rem}
+
+  .pedidos{display:grid;gap:16px}
+  .pedido{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px 20px}
+  .pedido-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+  .pedido-head strong{font-size:1.05rem}
+  .pedido-head small{color:var(--muted);margin-left:8px}
+
+  .estado{font-size:.72rem;text-transform:uppercase;letter-spacing:.5px;font-weight:700;
+    padding:4px 12px;border-radius:999px;border:1px solid var(--border);background:var(--surface-2);color:var(--accent-2)}
+  .estado.pendiente{color:#fcd34d;border-color:#78591f;background:#2b2210}
+  .estado.enviado{color:#93c5fd;border-color:#1e3a8a;background:#10264a}
+  .estado.entregado{color:#86efac;border-color:#14532d;background:#0f2e22}
+  .estado.cancelado{color:#fda4af;border-color:#7f1d2d;background:#3b1219}
+
+  .items{list-style:none;margin:0;padding:0;border-top:1px solid var(--border)}
+  .items li{display:flex;justify-content:space-between;gap:12px;padding:10px 0;
+    border-bottom:1px solid var(--border);color:var(--muted);font-size:.92rem}
+  .items li span:first-child{color:var(--text)}
+
+  .envio{margin:12px 0 0;color:var(--muted);font-size:.88rem}
+  .pedido-total{display:flex;justify-content:space-between;align-items:center;margin-top:12px;color:var(--muted)}
+  .pedido-total strong{font-size:1.2rem;color:var(--accent)}
+</style>
+
+<div class="page-head">
+  <h1>Mis pedidos</h1>
+  <p>Aquí aparecen las compras que has realizado</p>
+</div>
+
+{% if pedidos %}
+<div class="pedidos">
+  {% for p in pedidos %}
+  <article class="pedido">
+    <div class="pedido-head">
+      <div>
+        <strong>Pedido #{{ p.id|slice:"-6:" }}</strong>
+        {% if p.fecha %}<small>{{ p.fecha|slice:":10" }}</small>{% endif %}
+      </div>
+      {% if p.estado %}<span class="estado {{ p.estado|lower }}">{{ p.estado }}</span>{% endif %}
+    </div>
+
+    {% if p.items %}
+    <ul class="items">
+      {% for it in p.items %}
+      <li>
+        <span>{{ it.nombre|default:it.producto_id }}</span>
+        <span>x{{ it.cantidad }}{% if it.precio_unitario %} · ${{ it.precio_unitario|floatformat:"0g" }} c/u{% endif %}</span>
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if p.direccion_envio %}<p class="envio">Envío a: {{ p.direccion_envio }}</p>{% endif %}
+
+    {% if p.total %}
+    <div class="pedido-total">
+      <span>Total</span>
+      <strong>${{ p.total|floatformat:"0g" }}</strong>
+    </div>
+    {% endif %}
+  </article>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

@@ -22,7 +22,7 @@ class ItemPedidoOut(ItemPedido):
 
 
 class PedidoCreate(BaseModel):
-    usuario_id: int            # id del usuario en Django
+    usuario_id: str         # id del usuario en Django
     usuario_email: EmailStr
     usuario_nombre: str = Field(..., min_length=2)
     items: List[ItemPedido] = Field(..., min_length=1)
@@ -35,7 +35,7 @@ class PedidoEstadoUpdate(BaseModel):
 
 class PedidoOut(BaseModel):
     id: str
-    usuario_id: int
+    usuario_id: str
     items: List[ItemPedidoOut]
     direccion_envio: str
     total: float

@@ -19,7 +19,7 @@ def crear_pedido(pedido:PedidoCreate):
             "$setOnInsert": {
                 "nombre": pedido.usuario_nombre,
                 "rol": Rol.cliente.value,
-                "fecha_registro": datetime.now(timezone.outc)
+                "fecha_registro": datetime.now(timezone.utc)
             },
         },
         upsert=True
@@ -65,7 +65,7 @@ def crear_pedido(pedido:PedidoCreate):
 
 
 @router.get("/", response_model=List[PedidoOut])
-def listar_pedidos(usuario_id: Optional[int] = None):
+def listar_pedidos(usuario_id: Optional[str] = None):
     """Con usuario_id: historial del cliente. Sin usuario_id: solo admin."""
     if usuario_id is None:
         raise HTTPException(status_code=400, detail="Indica usuario_id, o usa /pedidos/admin/todos")

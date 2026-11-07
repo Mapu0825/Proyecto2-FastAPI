@@ -21,11 +21,27 @@
 
   /* Contenido de las tarjetas */
   .card .info{display:flex;flex-direction:column;flex:1;gap:6px}
-  .card h3{margin:8px 0 0;font-size:1.1rem;letter-spacing:-.3px}
+  .card h2{margin:8px 0 0;font-size:1.1rem;letter-spacing:-.3px}
   .card p{margin:0;color:var(--muted);font-size:.9rem;line-height:1.45}
   .card .precio{margin-top:auto;padding-top:10px;color:var(--accent)}
   .stock{font-size:.8rem;font-weight:500;color:#86efac}
   .stock.agotado{color:#fda4af}
+
+  /* Botón comprar */
+  .card .comprar{display:block;text-align:center;margin-top:12px;padding:11px 16px}
+  .card .comprar.off{
+    background:var(--surface-2);color:var(--muted);cursor:not-allowed;
+    pointer-events:none;box-shadow:none;border:1px solid var(--border);
+  }
+
+  /* Acciones de administrador */
+  .card .admin-acciones{display:flex;gap:8px;margin-top:12px;padding:0}
+  .admin-acciones form{flex:1;margin:0}
+  .admin-acciones .btn{display:block;width:100%;margin:0;padding:10px;text-align:center;font-size:.9rem}
+  .admin-acciones .editar{background:var(--surface-2);color:var(--accent);border:1px solid var(--border)}
+  .admin-acciones .eliminar{background:#3b1219;color:#fda4af;border:1px solid #7f1d2d}
+  .admin-acciones .btn:hover{box-shadow:none;filter:brightness(1.2)}
+
   .vacio{grid-column:1/-1;text-align:center;padding:48px 16px;color:var(--muted);
     background:var(--surface);border:1px dashed var(--border);border-radius:16px}
 </style>
@@ -36,7 +52,8 @@
     <p>Encuentra la mejor tecnología para ti</p>
   </div>
   <form method="get" class="filtro">
-    <input name="categoria" value="{{ categoria }}" placeholder="Filtrar por categoría">
+    <label for="categoria" class="sr-only">Filtrar por categoría</label>
+    <input id="categoria" name="categoria" value="{{ categoria }}" placeholder="Filtrar por categoría">
     <button type="submit">Filtrar</button>
   </form>
 </div>
@@ -47,18 +64,40 @@
     {% if p.imagen_url %}<img src="{{ p.imagen_url }}" alt="{{ p.nombre }}">{% else %}<div class="noimg"></div>{% endif %}
     <div class="info">
       <span class="tag" style="align-self:flex-start">{{ p.categoria }}</span>
-      <h3>{{ p.nombre }}</h3>
+      <h2>{{ p.nombre }}</h2>
       <p>{{ p.descripcion }}</p>
       <p class="precio">${{ p.precio|floatformat:"0g" }}</p>
       {% if p.stock > 0 %}
-        <small class="stock">● {{ p.stock }} disponibles</small>
+        <small class="stock"><span aria-hidden="true">●</span> {{ p.stock }} disponibles</small>
       {% else %}
-        <small class="stock agotado">● Agotado</small>
+        <small class="stock agotado"><span aria-hidden="true">●</span> Agotado</small>
+      {% endif %}
+
+      {% if p.stock > 0 %}
+        {% if not request.session.usuario %}
+          {# Sin sesión: va al login y vuelve a comprar después de entrar #}
+          <a class="btn comprar" href="{% url 'login' %}?next={% url 'comprar' p.id %}" aria-label="Comprar {{ p.nombre }}">Comprar</a>
+        {% elif request.session.usuario.rol == 'cliente' %}
+          <a class="btn comprar" href="{% url 'comprar' p.id %}" aria-label="Comprar {{ p.nombre }}">Comprar</a>
+        {% endif %}
+      {% else %}
+        <span class="btn comprar off">Agotado</span>
+      {% endif %}
+
+      {% if request.session.usuario.rol == 'administrador' %}
+      <div class="admin-acciones">
+        <a class="btn editar" href="{% url 'producto_editar' p.id %}" aria-label="Editar {{ p.nombre }}">Editar</a>
+        <form method="post" action="{% url 'producto_eliminar' p.id %}"
+              onsubmit="return confirm('¿Eliminar &quot;{{ p.nombre|escapejs }}&quot;? Esta acción no se puede deshacer.')">
+          {% csrf_token %}
+          <button type="submit" class="btn eliminar" aria-label="Eliminar {{ p.nombre }}">Eliminar</button>
+        </form>
+      </div>
       {% endif %}
     </div>
   </article>
   {% empty %}
-  <p class="vacio">No hay productos para mostrar.</p>
+  <p class="vacio" role="status">No hay productos para mostrar.</p>
   {% endfor %}
 </div>
 {% endblock %}

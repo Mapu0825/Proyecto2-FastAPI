@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="{% block description %}TechGear: tecnología y accesorios al mejor precio.{% endblock %}">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2322d3ee'/%3E%3Cstop offset='1' stop-color='%23a78bfa'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='url(%23g)'/%3E%3Cpath d='M18 20h28v7H35v21h-7V27H18z' fill='%2306121f'/%3E%3C/svg%3E">
   <title>{% block title %}TechGear{% endblock %}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,7 +13,7 @@
     :root{
       --bg:#0b0f1a; --surface:#131a2b; --surface-2:#1b2540; --border:#26335a;
       --text:#e6ebf5; --muted:#8b97b5;
-      --accent:#22d3ee; --accent-2:#8b5cf6;
+      --accent:#22d3ee; --accent-2:#a78bfa;
       --grad:linear-gradient(135deg,var(--accent),var(--accent-2));
     }
     *{box-sizing:border-box}
@@ -29,13 +31,14 @@
       position:sticky;top:0;z-index:10;
       background:#0b0f1acc;backdrop-filter:blur(10px);
       border-bottom:1px solid var(--border);
-      padding:14px 28px;display:flex;justify-content:space-between;align-items:center;
+      padding:8px 28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px;
     }
-    nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-weight:500;transition:color .2s}
+    nav a{color:var(--muted);text-decoration:none;margin-left:6px;padding:10px 12px;display:inline-block;font-weight:500;transition:color .2s}
     nav a:hover{color:var(--accent)}
-    nav span{margin-left:20px;color:var(--muted);font-size:.9rem}
+    nav div{display:flex;align-items:center;flex-wrap:wrap}
+    nav span{margin-left:12px;color:var(--muted);font-size:.9rem}
     nav .logo{
-      margin:0;font-weight:700;font-size:1.35rem;letter-spacing:-.5px;
+      margin:0;padding:10px 0;font-weight:700;font-size:1.35rem;letter-spacing:-.5px;
       background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
     }
 
@@ -82,10 +85,21 @@
       display:inline-block;transition:transform .15s,box-shadow .15s;
     }
     button:hover,.btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px #8b5cf655}
+
+    /* Accesibilidad */
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    .skip-link{position:absolute;left:12px;top:-60px;background:var(--accent);color:#06121f;padding:10px 16px;border-radius:8px;font-weight:700;z-index:100;text-decoration:none}
+    .skip-link:focus{top:12px}
+    :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+    @media (prefers-reduced-motion:reduce){
+      *{transition:none!important;animation:none!important}
+      .card:hover,button:hover,.btn:hover{transform:none!important}
+    }
   </style>
 </head>
 <body>
-<nav>
+<a class="skip-link" href="#contenido">Saltar al contenido</a>
+<nav aria-label="Principal">
   <a class="logo" href="{% url 'catalogo' %}">TechGear</a>
   <div>
     <a href="{% url 'catalogo' %}">Catálogo</a>
@@ -94,6 +108,9 @@
       {% if request.session.usuario.rol == "administrador" %}
         <a href="{% url 'panel_admin' %}">Panel de administración</a>
       {% endif %}
+      {% if request.session.usuario.rol == 'cliente' %}
+      <a href="{% url 'mis_pedidos' %}">Mis pedidos</a>
+      {% endif %}
       <a href="{% url 'logout' %}">Salir</a>
     {% else %}
       <a href="{% url 'login' %}">Iniciar sesión</a>
@@ -101,8 +118,8 @@
     {% endif %}
   </div>
 </nav>
-<main>
-  {% for m in messages %}<div class="msg {{ m.tags }}">{{ m }}</div>{% endfor %}
+<main id="contenido">
+  {% for m in messages %}<div class="msg {{ m.tags }}" role="{% if m.tags == 'error' %}alert{% else %}status{% endif %}">{{ m }}</div>{% endfor %}
   {% block content %}{% endblock %}
 </main>
 </body>

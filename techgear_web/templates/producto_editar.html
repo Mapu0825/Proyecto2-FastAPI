@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Editar producto · TechGear{% endblock %}
+{% block content %}
+<style>
+  .box{max-width:520px}
+  .box h2{
+    margin:0 0 6px;font-size:1.6rem;letter-spacing:-.5px;
+    background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .box .sub{margin:0 0 8px;color:var(--muted);font-size:.9rem}
+
+  .fila{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:480px){.fila{grid-template-columns:1fr}}
+
+  .box button{width:100%;margin-top:22px}
+  .box .alt{margin:20px 0 0;text-align:center;color:var(--muted);font-size:.9rem}
+  .box .alt a{color:var(--accent);text-decoration:none;font-weight:500}
+  .box .alt a:hover{text-decoration:underline}
+</style>
+
+<form class="box" method="post">
+  {% csrf_token %}
+  <h2>Editar producto</h2>
+  <p class="sub">Modifica los datos y guarda los cambios</p>
+
+  <label for="nombre">Nombre</label>
+  <input type="text" id="nombre" name="nombre" value="{{ producto.nombre }}" minlength="2" maxlength="100" required>
+
+  <label for="descripcion">Descripción</label>
+  <input type="text" id="descripcion" name="descripcion" value="{{ producto.descripcion }}" maxlength="500" required>
+
+  <div class="fila">
+    <div>
+      <label for="precio">Precio</label>
+      <input type="number" id="precio" name="precio" value="{{ producto.precio|stringformat:'s' }}" min="0.01" step="0.01" required>
+    </div>
+    <div>
+      <label for="stock">Stock</label>
+      <input type="number" id="stock" name="stock" value="{{ producto.stock|stringformat:'s' }}" min="0" step="1" required>
+    </div>
+  </div>
+
+  <label for="categoria">Categoría</label>
+  <input type="text" id="categoria" name="categoria" value="{{ producto.categoria }}" minlength="2" required>
+
+  <label for="imagen_url">URL de imagen (opcional)</label>
+  <input type="url" id="imagen_url" name="imagen_url" value="{{ producto.imagen_url|default:'' }}" placeholder="https://...">
+
+  <button type="submit">Guardar cambios</button>
+  <p class="alt"><a href="{% url 'catalogo' %}">← Volver al catálogo</a></p>
+</form>
+{% endblock %}
